@@ -1,11 +1,9 @@
-// 1. Import the express library
 const express = require("express");
 const path = require("path");
+const axios = require("axios");
 
-// 2. Create an instance of an Express application
 const app = express();
 
-// 3. Define the port the server will run on
 const port = 3000;
 
 // Route for the homepage, sends index.html
@@ -18,7 +16,24 @@ app.get("/contact", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "contact.html"));
 });
 
-// 5. Start the server and have it listen for incoming connections
+// GET route at the path /api/fun-fact
+app.get("/api/fun-fact", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://uselessfacts.jsph.pl/api/v2/facts/random"
+    );
+
+    return res.json({
+      fact: response.data.text,
+    });
+  } catch (error) {
+    console.error("Error fetching fun fact:", error.message);
+    return res.status(500).json({
+      error: "Could not fetch fun fact",
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
